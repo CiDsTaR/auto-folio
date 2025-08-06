@@ -1,0 +1,293 @@
+---
+// src/components/WorkflowGrid.astro
+export interface Props {
+  workflows: Array<{
+    id: number;
+    title: string;
+    slug: string;
+    description: string;
+    icon: string;
+    categorySlug: string;
+    categoryName: string;
+    nodeCount: number;
+    complexity: string;
+    rating: number;
+    deliveryTime: string;
+    priceMin: number;
+    priceMax: number;
+    featured: boolean;
+    features: string[];
+    integrations: Array<{name: string; category?: string}>;
+  }>;
+}
+
+const { workflows } = Astro.props;
+---
+
+<div id="workflow-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
+  {workflows.map((workflow) => (
+    <article
+      class="workflow-card group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+      data-workflow={JSON.stringify({
+        id: workflow.id,
+        title: workflow.title,
+        slug: workflow.slug,
+        categorySlug: workflow.categorySlug,
+        categoryName: workflow.categoryName,
+        priceMin: workflow.priceMin,
+        features: workflow.features,
+        integrations: workflow.integrations
+      })}
+    >
+      <!-- Featured Badge -->
+      {workflow.featured && (
+        <div class="absolute top-4 right-4 z-10">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
+            ⭐ Destacado
+          </span>
+        </div>
+      )}
+
+      <!-- Gradient Border -->
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+      <div class="absolute inset-[2px] bg-white rounded-3xl"></div>
+
+      <!-- Card Content -->
+      <div class="relative p-8 h-full flex flex-col">
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center space-x-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+              {workflow.icon}
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+                {workflow.title}
+              </h3>
+              <span class="inline-block px-3 py-1 text-xs font-medium text-primary-600 bg-primary-50 rounded-full uppercase tracking-wide">
+                {workflow.categoryName}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <p class="text-gray-600 leading-relaxed mb-6 flex-grow">
+          {workflow.description}
+        </p>
+
+        <!-- Features -->
+        <div class="mb-6">
+          <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+            <span class="mr-2">✨</span>
+            Características
+          </h4>
+          <div class="flex flex-wrap gap-2">
+            {workflow.features.slice(0, 3).map((feature) => (
+              <span class="px-3 py-1 text-xs font-medium bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-full">
+                {feature}
+              </span>
+            ))}
+            {workflow.features.length > 3 && (
+              <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                +{workflow.features.length - 3} más
+              </span>
+            )}
+          </div>
+        </div>
+
+        <!-- Integrations -->
+        <div class="mb-6">
+          <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+            <span class="mr-2">🔗</span>
+            Integraciones
+          </h4>
+          <div class="flex flex-wrap gap-2">
+            {workflow.integrations.slice(0, 4).map((integration) => (
+              <span class="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-600 rounded-full border border-blue-100">
+                {integration.name}
+              </span>
+            ))}
+            {workflow.integrations.length > 4 && (
+              <span class="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                +{workflow.integrations.length - 4} más
+              </span>
+            )}
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-2xl mb-6">
+          <div class="text-center">
+            <div class="text-lg font-bold text-gray-900">{workflow.nodeCount}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Nodos</div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold text-gray-900 flex items-center justify-center">
+              {workflow.rating}
+              <svg class="w-4 h-4 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+            </div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Rating</div>
+          </div>
+          <div class="text-center">
+            <div class="text-lg font-bold text-gray-900">{workflow.deliveryTime}</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Entrega</div>
+          </div>
+        </div>
+
+        <!-- Price and Actions -->
+        <div class="mt-auto">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <span class="text-2xl font-bold text-gray-900">€{workflow.priceMin}</span>
+              <span class="text-gray-500"> - €{workflow.priceMax}</span>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-gray-500 uppercase tracking-wide">Complejidad</div>
+              <div class="text-sm font-semibold text-gray-700">{workflow.complexity}</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <a
+              href={`/workflows/${workflow.slug}`}
+              class="flex items-center justify-center px-4 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-secondary-600 transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
+              onclick={`
+                if (window.analytics) {
+                  window.analytics.trackWorkflowInteraction('view_details', {
+                    title: '${workflow.title}',
+                    slug: '${workflow.slug}',
+                    categoryName: '${workflow.categoryName}',
+                    priceMin: ${workflow.priceMin},
+                    complexity: '${workflow.complexity}',
+                    rating: ${workflow.rating}
+                  });
+                }
+              `}
+            >
+              Ver Detalles
+            </a>
+            <button
+              onclick={`
+                openCalendlyModal('workflow', {
+                  title: '${workflow.title}',
+                  slug: '${workflow.slug}',
+                  categoryName: '${workflow.categoryName}',
+                  priceMin: ${workflow.priceMin}
+                });
+              `}
+              class="flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl hover:border-primary-500 hover:text-primary-600 hover:bg-primary-50 transform hover:-translate-y-0.5 transition-all duration-300 text-sm"
+            >
+              <span class="mr-2">📅</span>
+              Demo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hover Effect Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl pointer-events-none"></div>
+    </article>
+  ))}
+</div>
+
+<!-- Loading Animation for Dynamic Content -->
+<div id="loading-workflows" class="hidden">
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
+    {Array.from({ length: 6 }).map(() => (
+      <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden animate-pulse">
+        <div class="p-8">
+          <div class="flex items-center space-x-4 mb-6">
+            <div class="w-16 h-16 bg-gray-200 rounded-2xl"></div>
+            <div class="flex-1">
+              <div class="h-6 bg-gray-200 rounded mb-2"></div>
+              <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            <div class="h-4 bg-gray-200 rounded"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+            <div class="h-4 bg-gray-200 rounded w-4/6"></div>
+          </div>
+          <div class="flex space-x-2 mb-6">
+            <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+            <div class="h-6 bg-gray-200 rounded-full w-20"></div>
+            <div class="h-6 bg-gray-200 rounded-full w-18"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-2xl mb-6">
+            <div class="text-center">
+              <div class="h-6 bg-gray-200 rounded mb-1"></div>
+              <div class="h-3 bg-gray-200 rounded"></div>
+            </div>
+            <div class="text-center">
+              <div class="h-6 bg-gray-200 rounded mb-1"></div>
+              <div class="h-3 bg-gray-200 rounded"></div>
+            </div>
+            <div class="text-center">
+              <div class="h-6 bg-gray-200 rounded mb-1"></div>
+              <div class="h-3 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="h-12 bg-gray-200 rounded-xl"></div>
+            <div class="h-12 bg-gray-200 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .workflow-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .workflow-card:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  }
+
+  /* Staggered animation for cards */
+  .workflow-card:nth-child(1) { animation-delay: 0.1s; }
+  .workflow-card:nth-child(2) { animation-delay: 0.2s; }
+  .workflow-card:nth-child(3) { animation-delay: 0.3s; }
+  .workflow-card:nth-child(4) { animation-delay: 0.4s; }
+  .workflow-card:nth-child(5) { animation-delay: 0.5s; }
+  .workflow-card:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .workflow-card {
+    animation: slideInUp 0.6s ease-out both;
+  }
+
+  /* Enhanced hover effects */
+  .workflow-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 1.5rem;
+    pointer-events: none;
+  }
+
+  .workflow-card:hover::before {
+    opacity: 1;
+  }
+</style>

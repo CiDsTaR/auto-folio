@@ -1,0 +1,353 @@
+---
+// src/components/WorkflowDetailSidebar.astro
+export interface Props {
+  workflow: {
+    title: string;
+    nodeCount: number;
+    complexity: string;
+    setupTime: string;
+    maintenance: string;
+    scalability: string;
+    aiIntegrated: boolean;
+    supportDays: number;
+    consultationHours: number;
+    priceMin: number;
+    priceMax: number;
+    deliveryTime: string;
+    includes: Array<{item: string; icon: string; category?: string}>;
+    features: string[];
+    integrations: Array<{name: string; category?: string}>;
+  };
+}
+
+const { workflow } = Astro.props;
+
+// Group includes by category
+const groupedIncludes = workflow.includes?.reduce((acc, include) => {
+  const category = include.category || 'general';
+  if (!acc[category]) acc[category] = [];
+  acc[category].push(include);
+  return acc;
+}, {}) || {};
+
+// Group integrations by category
+const groupedIntegrations = workflow.integrations?.reduce((acc, integration) => {
+  const category = integration.category || 'other';
+  if (!acc[category]) acc[category] = [];
+  acc[category].push(integration);
+  return acc;
+}, {}) || {};
+---
+
+<div class="space-y-8">
+  <!-- Pricing Card -->
+  <div class="bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl shadow-xl p-8 text-white sticky top-8">
+    <div class="text-center mb-6">
+      <div class="text-sm font-medium opacity-90 mb-2">Precio del Workflow</div>
+      <div class="text-4xl font-bold mb-1">
+        €{workflow.priceMin}
+        {workflow.priceMax > workflow.priceMin && (
+          <span class="text-lg font-normal opacity-75"> - €{workflow.priceMax}</span>
+        )}
+      </div>
+      <div class="text-sm opacity-75">Implementación completa</div>
+    </div>
+
+    <div class="space-y-4 mb-8">
+      <div class="flex items-center justify-between text-sm">
+        <span class="opacity-90">Entrega:</span>
+        <span class="font-semibold">{workflow.deliveryTime}</span>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <span class="opacity-90">Soporte:</span>
+        <span class="font-semibold">{workflow.supportDays} días</span>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <span class="opacity-90">Consultoría:</span>
+        <span class="font-semibold">{workflow.consultationHours}h incluida</span>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <button 
+        onclick={`
+          if (window.analytics) {
+            window.analytics.trackPurchaseIntent(window.analytics.currentWorkflow);
+          }
+          alert('Integrar con sistema de pagos (Stripe/PayPal)');
+        `}
+        class="w-full bg-white text-primary-600 font-bold py-4 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg"
+      >
+        Comprar Ahora
+      </button>
+      
+      <button 
+        onclick={`openCalendlyModal('workflow', window.analytics?.currentWorkflow)`}
+        class="w-full bg-transparent border-2 border-white text-white font-semibold py-4 rounded-xl hover:bg-white hover:text-primary-600 transition-all duration-300 flex items-center justify-center"
+      >
+        <span class="mr-2">📅</span>
+        Agendar Demo
+      </button>
+    </div>
+
+    <div class="mt-6 pt-6 border-t border-white/20 text-center">
+      <div class="text-xs opacity-75 mb-2">💳 Pago seguro con</div>
+      <div class="flex justify-center space-x-4 text-2xl">
+        <span>💳</span>
+        <span>🏦</span>
+        <span>💰</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Specifications -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+      <span class="mr-3">⚙️</span>
+      Especificaciones Técnicas
+    </h3>
+    
+    <div class="space-y-4">
+      <div class="flex justify-between items-center py-2 border-b border-gray-100">
+        <span class="text-gray-600 font-medium">Nodos</span>
+        <span class="font-bold text-gray-900">{workflow.nodeCount} nodos</span>
+      </div>
+      
+      <div class="flex justify-between items-center py-2 border-b border-gray-100">
+        <span class="text-gray-600 font-medium">Complejidad</span>
+        <span class={`font-semibold px-3 py-1 rounded-full text-sm ${
+          workflow.complexity === 'Básica' ? 'bg-green-100 text-green-800' :
+          workflow.complexity === 'Intermedia' ? 'bg-yellow-100 text-yellow-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          {workflow.complexity}
+        </span>
+      </div>
+      
+      <div class="flex justify-between items-center py-2 border-b border-gray-100">
+        <span class="text-gray-600 font-medium">Tiempo Setup</span>
+        <span class="font-semibold text-gray-900">{workflow.setupTime}</span>
+      </div>
+      
+      <div class="flex justify-between items-center py-2 border-b border-gray-100">
+        <span class="text-gray-600 font-medium">Mantenimiento</span>
+        <span class="font-semibold text-gray-900">{workflow.maintenance}</span>
+      </div>
+      
+      <div class="flex justify-between items-center py-2 border-b border-gray-100">
+        <span class="text-gray-600 font-medium">Escalabilidad</span>
+        <span class="font-semibold text-gray-900">{workflow.scalability}</span>
+      </div>
+      
+      {workflow.aiIntegrated && (
+        <div class="flex justify-between items-center py-2">
+          <span class="text-gray-600 font-medium">IA Integrada</span>
+          <span class="flex items-center font-semibold text-purple-600">
+            <span class="mr-1">🤖</span>
+            Sí
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- What's Included -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+      <span class="mr-3">📦</span>
+      Qué Incluye
+    </h3>
+    
+    {Object.entries(groupedIncludes).map(([category, items]) => (
+      <div class="mb-6 last:mb-0">
+        {category !== 'general' && (
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 flex items-center">
+            <span class="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+            {category === 'setup' ? 'Configuración' :
+             category === 'support' ? 'Soporte' :
+             category === 'templates' ? 'Plantillas' :
+             category === 'analytics' ? 'Analytics' :
+             category === 'features' ? 'Funcionalidades' :
+             category === 'documentation' ? 'Documentación' : category}
+          </h4>
+        )}
+        
+        <div class="space-y-3">
+          {items.map((include, index) => (
+            <div class="flex items-start">
+              <span class="mr-3 text-lg flex-shrink-0">{include.icon}</span>
+              <span class="text-gray-700 leading-relaxed">{include.item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Integrations -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+      <span class="mr-3">🔗</span>
+      Integraciones Incluidas
+    </h3>
+    
+    {Object.entries(groupedIntegrations).map(([category, integrations]) => (
+      <div class="mb-6 last:mb-0">
+        <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 flex items-center">
+          <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+          {category === 'Email' ? 'Email Marketing' :
+           category === 'CRM' ? 'CRM & Ventas' :
+           category === 'Social' ? 'Redes Sociales' :
+           category === 'Payment' ? 'Pagos' :
+           category === 'Analytics' ? 'Analytics' :
+           category === 'Communication' ? 'Comunicación' :
+           category === 'E-commerce' ? 'E-commerce' :
+           category === 'AI' ? 'Inteligencia Artificial' :
+           category === 'Advertising' ? 'Publicidad' :
+           category === 'Automation' ? 'Automatización' :
+           category === 'Data' ? 'Gestión de Datos' :
+           category === 'BI' ? 'Business Intelligence' : 'Otras'}
+        </h4>
+        
+        <div class="flex flex-wrap gap-2">
+          {integrations.map((integration) => (
+            <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full border border-blue-200">
+              {integration.name}
+            </span>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Features Overview -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+      <span class="mr-3">✨</span>
+      Características Principales
+    </h3>
+    
+    <div class="space-y-3">
+      {workflow.features?.map((feature, index) => (
+        <div class="flex items-center">
+          <div class="w-6 h-6 bg-gradient-to-br from-primary-500 to-secondary-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0">
+            {index + 1}
+          </div>
+          <span class="text-gray-700">{feature}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Guarantee Section -->
+  <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl border border-green-200 p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+      <span class="mr-3">🛡️</span>
+      Nuestra Garantía
+    </h3>
+    
+    <div class="space-y-4 text-sm">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <div>
+          <div class="font-semibold text-gray-900">Funcionalidad Garantizada</div>
+          <div class="text-gray-600">El workflow funcionará según especificaciones o reembolso completo</div>
+        </div>
+      </div>
+      
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <div>
+          <div class="font-semibold text-gray-900">Entrega a Tiempo</div>
+          <div class="text-gray-600">Cumplimos los plazos de entrega o compensación del 20%</div>
+        </div>
+      </div>
+      
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        <div>
+          <div class="font-semibold text-gray-900">Soporte Incluido</div>
+          <div class="text-gray-600">Soporte técnico gratuito durante el periodo especificado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Card -->
+  <div class="bg-gray-50 rounded-2xl p-6 text-center">
+    <h3 class="text-lg font-bold text-gray-900 mb-4">¿Tienes dudas?</h3>
+    <p class="text-gray-600 text-sm mb-6">
+      Nuestro equipo está aquí para ayudarte a elegir la mejor solución para tu negocio.
+    </p>
+    
+    <div class="space-y-3">
+      <button 
+        onclick={`openCalendlyModal('consultation')`}
+        class="w-full bg-primary-600 text-white font-semibold py-3 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center"
+      >
+        <span class="mr-2">📞</span>
+        Consultoría Gratuita
+      </button>
+      
+      <a 
+        href={`https://wa.me/${import.meta.env.PUBLIC_WHATSAPP_NUMBER || '34XXXXXXXXX'}?text=Hola, tengo dudas sobre ${workflow.title}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full bg-green-500 text-white font-semibold py-3 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center"
+      >
+        <span class="mr-2">💬</span>
+        WhatsApp
+      </a>
+      
+      <a 
+        href={`mailto:${import.meta.env.PUBLIC_CONTACT_EMAIL || 'contact@tu-dominio.com'}?subject=Consulta sobre ${workflow.title}`}
+        class="w-full bg-gray-200 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center"
+      >
+        <span class="mr-2">📧</span>
+        Email
+      </a>
+    </div>
+  </div>
+
+  <!-- Security & Trust -->
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+      <span class="mr-3">🔒</span>
+      Seguridad & Confianza
+    </h3>
+    
+    <div class="space-y-4 text-sm">
+      <div class="flex items-center">
+        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+        <span class="text-gray-700">Datos encriptados end-to-end</span>
+      </div>
+      <div class="flex items-center">
+        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+        <span class="text-gray-700">Cumplimiento GDPR</span>
+      </div>
+      <div class="flex items-center">
+        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+        <span class="text-gray-700">Backup automático diario</span>
+      </div>
+      <div class="flex items-center">
+        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+        <span class="text-gray-700">Monitoreo 24/7</span>
+      </div>
+    </div>
+
+    <div class="mt-6 pt-4 border-t border-gray-100">
+      <div class="flex justify-center space-x-4 text-2xl opacity-60">
+        <span title="SSL Certificado">🔐</span>
+        <span title="ISO 27001">📋</span>
+        <span title="GDPR Compliant">🇪🇺</span>
+        <span title="SOC 2">🛡️</span>
+      </div>
+    </div>
+  </div>
+</div>

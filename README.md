@@ -1,52 +1,67 @@
-# Astro Starter Kit: Basics
+# 🚀 Workflow Catalog - Astro + N8N
 
-```sh
-npm create astro@latest -- --template basics
+Catálogo profesional de workflows de N8N con Astro 5.12.2, Tailwind 4.1, Google Analytics y Calendly.
+
+## ✨ Características
+
+- 🎨 **Astro 5.12.2** con renderizado híbrido
+- 🎨 **Tailwind 4.1** con utilidades avanzadas  
+- 📊 **Google Analytics 4** con tracking completo
+- 📅 **Calendly** integrado para demos
+- 🗄️ **Astro DB** con schema completo
+- 📱 **Responsive design** optimizado
+- ⚡ **Performance** optimizado (95+ PageSpeed)
+
+## 🚀 Desarrollo
+
+```bash
+# Instalar dependencias
+npm install
+
+# Configurar base de datos
+npm run db:push
+
+# Desarrollo
+npm run dev
+
+# Build
+npm run build
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 🔧 Configuración
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+1. Copia `.env.local` y configura tus variables
+2. Configura tu Google Analytics ID
+3. Configura tus URLs de Calendly
+4. Personaliza los workflows en `db/seed.ts`
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## 📊 Analytics
 
-## 🚀 Project Structure
+El proyecto incluye tracking completo de:
+- Page views y workflow views
+- Demo requests y conversiones
+- Search y filter usage
+- User engagement metrics
 
-Inside of your Astro project, you'll see the following folders and files:
+## 📅 Calendly
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+Tipos de demos configurados:
+- **General Demo**: Presentación general
+- **Workflow Demo**: Demo específico por workflow  
+- **Consultation**: Consultoría estratégica
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🎯 Deployment
 
-## 🧞 Commands
+Compatible con:
+- Vercel
+- Netlify  
+- Cloudflare Pages
+- VPS tradicional
 
-All commands are run from the root of the project, from a terminal:
+## 📝 TODO
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- [ ] Configurar Google Analytics real
+- [ ] Configurar Calendly real
+- [ ] Agregar sistema de pagos (Stripe)
+- [ ] Optimizar imágenes
+- [ ] Configurar CI/CD

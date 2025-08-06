@@ -1,3 +1,449 @@
+---
+// src/layouts/Layout.astro
+import "../styles/global.css";
+
+export interface Props {
+  title: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = "Workflows profesionales de N8N para automatizar tu negocio. Email marketing, e-commerce, CRM y más. Implementación garantizada en 24-48h.",
+  keywords = "n8n, workflows, automatización, marketing automation, ecommerce automation, crm automation",
+  image = "/og-image.jpg",
+  noindex = false
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL(image, Astro.url).href;
+---
+
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="Workflow Catalog N8N" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImage} />
+    
+    <!-- Additional Meta -->
+    <meta name="author" content="Workflow Catalog" />
+    <meta name="theme-color" content="#667eea" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://calendly.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- Calendly CSS -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+    
+    <!-- Google Analytics 4 (Partytown) -->
+    <script type="text/partytown">
+      // CONFIGURACIÓN GOOGLE ANALYTICS
+      const GA_MEASUREMENT_ID = 'GA_MEASUREMENT_ID'; // CAMBIAR POR TU GA4 ID
+      
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', GA_MEASUREMENT_ID, {
+        send_page_view: true,
+        allow_google_signals: true,
+        allow_ad_personalization_signals: true,
+        custom_map: {
+          'custom_parameter_1': 'workflow_id',
+          'custom_parameter_2': 'workflow_category'
+        }
+      });
+    </script>
+    <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID`}></script>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Workflow Catalog N8N",
+        "description": "Workflows profesionales de N8N para automatizar tu negocio",
+        "url": "https://tu-dominio.com",
+        "logo": "https://tu-dominio.com/logo.png",
+        "sameAs": [
+          "https://twitter.com/tu-handle",
+          "https://linkedin.com/company/tu-company"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+34-XXX-XXX-XXX",
+          "contactType": "Customer Service",
+          "availableLanguage": ["Spanish", "English"]
+        }
+      }
+    </script>
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical CSS for above-the-fold content */
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        line-height: 1.6;
+        color: #1f2937;
+      }
+      
+      .hero-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      /* Loading state */
+      .loading {
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards;
+      }
+      
+      @keyframes fadeIn {
+        to { opacity: 1; }
+      }
+      
+      /* Prevent layout shift */
+      .workflow-card {
+        min-height: 400px;
+      }
+    </style>
+  </head>
+  
+  <body class="bg-gray-50 antialiased">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary-600 text-white px-4 py-2 rounded-md z-50">
+      Saltar al contenido principal
+    </a>
+    
+    <main id="main-content">
+      <slot />
+    </main>
+    
+    <!-- Calendly Script (Partytown) -->
+    <script type="text/partytown" src="https://assets.calendly.com/assets/external/widget.js"></script>
+    
+    <!-- Analytics and Calendly Integration -->
+    <script>
+      // ===== ANALYTICS & CALENDLY CONFIGURATION =====
+      
+      // CONFIGURACIÓN CALENDLY
+      window.CALENDLY_CONFIG = {
+        general_demo: 'https://calendly.com/tu-usuario/demo-general', 
+        workflow_demo: 'https://calendly.com/tu-usuario/demo-workflow',
+        consultation: 'https://calendly.com/tu-usuario/consultoria',
+        
+        prefill: {
+          name: '',
+          email: '',
+          customAnswers: {}
+        },
+        utm: {
+          utmCampaign: 'workflow_catalog',
+          utmSource: 'website',
+          utmMedium: 'demo_button'
+        }
+      };
+
+      // ===== ANALYTICS TRACKING CLASS =====
+      class AnalyticsTracker {
+        constructor() {
+          this.sessionStart = Date.now();
+          this.currentWorkflow = null;
+          this.pageViews = 0;
+          this.setupEventTracking();
+        }
+
+        setupEventTracking() {
+          this.trackPageView('catalog_home');
+          this.setupScrollTracking();
+          this.setupTimeTracking();
+        }
+
+        trackPageView(page, workflowSlug = null) {
+          this.pageViews++;
+          
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'page_view', {
+              page_title: page,
+              page_location: window.location.href,
+              workflow_id: workflowSlug,
+              session_page_views: this.pageViews
+            });
+          }
+
+          if (workflowSlug && this.currentWorkflow) {
+            this.trackEcommerceEvent('view_item', {
+              currency: 'EUR',
+              value: this.currentWorkflow.priceMin,
+              items: [{
+                item_id: workflowSlug,
+                item_name: this.currentWorkflow.title,
+                category: this.currentWorkflow.categoryName,
+                price: this.currentWorkflow.priceMin
+              }]
+            });
+          }
+        }
+
+        trackEcommerceEvent(eventName, eventData) {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', eventName, eventData);
+          }
+        }
+
+        trackWorkflowInteraction(action, workflowData) {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', action, {
+              event_category: 'workflow_interaction',
+              event_label: workflowData.title,
+              workflow_id: workflowData.slug,
+              workflow_category: workflowData.categoryName,
+              workflow_price: workflowData.priceMin,
+              workflow_complexity: workflowData.complexity,
+              workflow_rating: workflowData.rating
+            });
+          }
+        }
+
+        trackDemoRequest(workflowData, demoType = 'general') {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'generate_lead', {
+              event_category: 'demo_request',
+              event_label: `${demoType}_demo`,
+              value: workflowData?.priceMin || 500,
+              currency: 'EUR',
+              workflow_id: workflowData?.slug || 'general',
+              demo_type: demoType
+            });
+          }
+        }
+
+        trackPurchaseIntent(workflowData) {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'add_to_cart', {
+              currency: 'EUR',
+              value: workflowData.priceMin,
+              items: [{
+                item_id: workflowData.slug,
+                item_name: workflowData.title,
+                category: workflowData.categoryName,
+                quantity: 1,
+                price: workflowData.priceMin
+              }]
+            });
+          }
+        }
+
+        trackSearch(searchTerm, resultCount) {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'search', {
+              search_term: searchTerm,
+              result_count: resultCount,
+              event_category: 'catalog_search'
+            });
+          }
+        }
+
+        trackFilter(filterType, filterValue, resultCount) {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'filter_results', {
+              event_category: 'catalog_filter',
+              filter_type: filterType,
+              filter_value: filterValue,
+              result_count: resultCount
+            });
+          }
+        }
+
+        setupScrollTracking() {
+          let maxScroll = 0;
+          window.addEventListener('scroll', () => {
+            const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            
+            if (scrollPercent > maxScroll && scrollPercent % 25 === 0) {
+              maxScroll = scrollPercent;
+              if (typeof gtag !== 'undefined') {
+                gtag('event', 'scroll', {
+                  event_category: 'engagement',
+                  scroll_depth: scrollPercent
+                });
+              }
+            }
+          });
+        }
+
+        setupTimeTracking() {
+          [30, 60, 120, 300].forEach(seconds => {
+            setTimeout(() => {
+              if (typeof gtag !== 'undefined') {
+                gtag('event', 'time_on_site', {
+                  event_category: 'engagement',
+                  time_seconds: seconds,
+                  workflow_id: this.currentWorkflow?.slug || 'catalog'
+                });
+              }
+            }, seconds * 1000);
+          });
+        }
+
+        setCurrentWorkflow(workflowData) {
+          this.currentWorkflow = workflowData;
+        }
+      }
+
+      // ===== CALENDLY INTEGRATION =====
+      
+      function openCalendlyModal(demoType = 'general', workflowData = null) {
+        // Track demo request
+        if (window.analytics) {
+          window.analytics.trackDemoRequest(workflowData, demoType);
+        }
+        
+        // Configurar URL según el tipo de demo
+        let calendlyUrl;
+        switch(demoType) {
+          case 'workflow':
+            calendlyUrl = window.CALENDLY_CONFIG.workflow_demo;
+            break;
+          case 'consultation':
+            calendlyUrl = window.CALENDLY_CONFIG.consultation;
+            break;
+          default:
+            calendlyUrl = window.CALENDLY_CONFIG.general_demo;
+        }
+
+        // Configurar prefill data
+        const prefillData = {
+          ...window.CALENDLY_CONFIG.prefill,
+          customAnswers: {
+            a1: workflowData?.title || 'Demo General',
+            a2: workflowData?.categoryName || 'General',
+            a3: window.location.href
+          }
+        };
+
+        // UTM parameters
+        const utmParams = {
+          ...window.CALENDLY_CONFIG.utm,
+          utmContent: workflowData?.slug || 'general_demo'
+        };
+
+        // Open Calendly popup
+        if (typeof Calendly !== 'undefined') {
+          Calendly.initPopupWidget({
+            url: calendlyUrl,
+            prefill: prefillData,
+            utm: utmParams
+          });
+        }
+      }
+
+      // Initialize analytics when DOM is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        window.analytics = new AnalyticsTracker();
+      });
+
+      // Listener para eventos de Calendly
+      window.addEventListener('message', function(e) {
+        if (e.origin !== 'https://calendly.com') return;
+        
+        if (e.data.event) {
+          switch(e.data.event) {
+            case 'calendly.event_scheduled':
+              if (typeof gtag !== 'undefined') {
+                gtag('event', 'conversion', {
+                  event_category: 'demo_booking',
+                  event_label: 'event_scheduled',
+                  value: window.analytics?.currentWorkflow?.priceMin || 500
+                });
+              }
+              showSuccessMessage();
+              break;
+              
+            case 'calendly.profile_page_viewed':
+              if (typeof gtag !== 'undefined') {
+                gtag('event', 'calendly_page_viewed', {
+                  event_category: 'demo_funnel'
+                });
+              }
+              break;
+          }
+        }
+      });
+
+      function showSuccessMessage() {
+        // Create success notification
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-6 rounded-xl shadow-lg z-50 transform translate-x-full transition-transform duration-500';
+        notification.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <div>
+              <div class="font-semibold">¡Demo agendada exitosamente!</div>
+              <div class="text-sm opacity-90">Recibirás un email de confirmación</div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+          notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+          notification.classList.add('translate-x-full');
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 5000);
+      }
+
+      // Expose functions globally
+      window.openCalendlyModal = openCalendlyModal;
+    </script>
+  </body>
+</html>
+
+<!-----
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -10,13 +456,15 @@
 	<body>
 		<slot />
 	</body>
-</html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+	</html>
+	
+	<style>
+		html,
+		body {
+			margin: 0;
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	
+--- -->

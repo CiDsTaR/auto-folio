@@ -1,0 +1,248 @@
+---
+// src/components/WorkflowCatalog.astro
+import { db, eq, Category, Workflow, WorkflowFeature, WorkflowIntegration } from 'astro:db';
+import WorkflowGrid from './WorkflowGrid.astro';
+import SearchAndFilters from './SearchAndFilters.astro';
+
+// Fetch data from database
+const categories = await db.select().from(Category);
+
+const workflows = await db.select({
+  id: Workflow.id,
+  title: Workflow.title,
+  slug: Workflow.slug,
+  description: Workflow.description,
+  icon: Workflow.icon,
+  categoryId: Workflow.categoryId,
+  nodeCount: Workflow.nodeCount,
+  complexity: Workflow.complexity,
+  rating: Workflow.rating,
+  deliveryTime: Workflow.deliveryTime,
+  priceMin: Workflow.priceMin,
+  priceMax: Workflow.priceMax,
+  featured: Workflow.featured,
+  active: Workflow.active,
+  categoryName: Category.name,
+  categorySlug: Category.slug,
+}).from(Workflow)
+.leftJoin(Category, eq(Workflow.categoryId, Category.id))
+.where((workflow) => workflow.active === true)
+.orderBy((workflow) => [workflow.featured, workflow.rating]);
+
+// Fetch features and integrations for each workflow
+const workflowFeatures = await db.select().from(WorkflowFeature);
+const workflowIntegrations = await db.select().from(WorkflowIntegration);
+
+// Group features and integrations by workflow ID
+const featuresMap = workflowFeatures.reduce((acc, feature) => {
+  if (!acc[feature.workflowId]) acc[feature.workflowId] = [];
+  acc[feature.workflowId].push(feature.feature);
+  return acc;
+}, {});
+
+const integrationsMap = workflowIntegrations.reduce((acc, integration) => {
+  if (!acc[integration.workflowId]) acc[integration.workflowId] = [];
+  acc[integration.workflowId].push({
+    name: integration.name,
+    category: integration.category
+  });
+  return acc;
+}, {});
+
+// Add features and integrations to workflows
+const enrichedWorkflows = workflows.map(workflow => ({
+  ...workflow,
+  features: featuresMap[workflow.id] || [],
+  integrations: integrationsMap[workflow.id] || []
+}));
+---
+
+<section id="catalog-section" class="py-16 lg:py-24 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-4">
+        Catálogo de Workflows
+      </h2>
+      <p class="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+        Descubre nuestros workflows profesionales diseñados para automatizar 
+        cada aspecto de tu negocio. Implementación garantizada en 24-48 horas.
+      </p>
+    </div>
+
+    <!-- Search and Filters -->
+    <SearchAndFilters categories={categories} />
+
+    <!-- Workflow Grid -->
+    <WorkflowGrid workflows={enrichedWorkflows} />
+    
+    <!-- No Results Message -->
+    <div id="no-results" class="hidden text-center py-16">
+      <div class="max-w-md mx-auto">
+        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          No se encontraron workflows
+        </h3>
+        <p class="text-gray-500">
+          Intenta ajustar tus filtros o términos de búsqueda
+        </p>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="mt-16 text-center">
+      <div class="bg-white rounded-2xl shadow-lg p-8 lg:p-12 border border-gray-200">
+        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+          ¿No encuentras lo que buscas?
+        </h3>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          Desarrollamos workflows personalizados según tus necesidades específicas. 
+          Agenda una consultoría gratuita y descubre cómo podemos automatizar tu negocio.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            onclick="openCalendlyModal('consultation')"
+            class="inline-flex items-center justify-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <span class="mr-2">📞</span>
+            Consultoría Gratuita
+          </button>
+          <a 
+            href="/workflows/personalizados" 
+            class="inline-flex items-center justify-center px-8 py-3 bg-gray-100 text-gray-900 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+          >
+            Ver Workflows Personalizados
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Client-side filtering and search script -->
+<script>
+  //import { AnalyticsTracker } from '../lib/analytics.js';
+
+  class WorkflowCatalogManager {
+    constructor() {
+      this.currentFilters = {
+        category: 'all',
+        search: ''
+      };
+      this.workflows = [];
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.loadWorkflowData();
+    }
+
+    setupEventListeners() {
+      // Search input
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            this.currentFilters.search = e.target.value;
+            this.filterWorkflows();
+            
+            // Track search
+            if (window.analytics && e.target.value.length > 2) {
+              window.analytics.trackSearch(e.target.value, this.getVisibleWorkflowCount());
+            }
+          }, 300);
+        });
+      }
+
+      // Filter buttons
+      const filterButtons = document.querySelectorAll('[data-filter]');
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Update active state
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+
+          // Update filter
+          this.currentFilters.category = button.dataset.filter;
+          this.filterWorkflows();
+
+          // Track filter usage
+          if (window.analytics) {
+            window.analytics.trackFilter('category', button.dataset.filter, this.getVisibleWorkflowCount());
+          }
+        });
+      });
+    }
+
+    loadWorkflowData() {
+      // Get workflow data from the rendered elements
+      const workflowCards = document.querySelectorAll('[data-workflow]');
+      this.workflows = Array.from(workflowCards).map(card => {
+        const data = JSON.parse(card.dataset.workflow);
+        return {
+          element: card,
+          ...data
+        };
+      });
+    }
+
+    filterWorkflows() {
+      let visibleCount = 0;
+
+      this.workflows.forEach(workflow => {
+        let isVisible = true;
+
+        // Category filter
+        if (this.currentFilters.category !== 'all' && 
+            workflow.categorySlug !== this.currentFilters.category) {
+          isVisible = false;
+        }
+
+        // Search filter
+        if (this.currentFilters.search && isVisible) {
+          const searchTerm = this.currentFilters.search.toLowerCase();
+          const searchableText = [
+            workflow.title,
+            workflow.description,
+            ...(workflow.features || []),
+            ...(workflow.integrations || []).map(i => i.name)
+          ].join(' ').toLowerCase();
+          
+          if (!searchableText.includes(searchTerm)) {
+            isVisible = false;
+          }
+        }
+
+        // Show/hide workflow
+        workflow.element.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) visibleCount++;
+      });
+
+      // Show/hide no results message
+      const noResults = document.getElementById('no-results');
+      if (noResults) {
+        noResults.classList.toggle('hidden', visibleCount > 0);
+      }
+
+      // Update workflow grid visibility
+      const workflowGrid = document.getElementById('workflow-grid');
+      if (workflowGrid) {
+        workflowGrid.classList.toggle('hidden', visibleCount === 0);
+      }
+    }
+
+    getVisibleWorkflowCount() {
+      return this.workflows.filter(w => w.element.style.display !== 'none').length;
+    }
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new WorkflowCatalogManager();
+  });
+</script>

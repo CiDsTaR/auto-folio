@@ -1,0 +1,160 @@
+---
+// src/components/Hero.astro
+---
+
+<section class="relative hero-gradient min-h-screen flex items-center justify-center overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+    <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1" opacity="0.3"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
+  </div>
+
+  <!-- Floating Elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-bounce" style="animation-delay: 0s; animation-duration: 3s;"></div>
+    <div class="absolute top-40 right-20 w-16 h-16 bg-accent-500/20 rounded-full blur-lg animate-bounce" style="animation-delay: 1s; animation-duration: 4s;"></div>
+    <div class="absolute bottom-40 left-20 w-24 h-24 bg-secondary-500/10 rounded-full blur-xl animate-bounce" style="animation-delay: 2s; animation-duration: 5s;"></div>
+    <div class="absolute bottom-20 right-10 w-12 h-12 bg-white/15 rounded-full blur-md animate-bounce" style="animation-delay: 0.5s; animation-duration: 3.5s;"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="space-y-8 animate-fade-in">
+      <!-- Badge -->
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white/90 text-sm font-medium">
+        <span class="mr-2">🚀</span>
+        Workflows Profesionales N8N
+      </div>
+
+      <!-- Main Heading -->
+      <h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight">
+        <span class="block">Automatiza tu</span>
+        <span class="block bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+          Negocio Completo
+        </span>
+        <span class="block text-3xl sm:text-4xl lg:text-5xl mt-2 text-white/90">
+          en 24-48 horas
+        </span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="max-w-3xl mx-auto text-lg sm:text-xl lg:text-2xl text-white/80 leading-relaxed">
+        Workflows profesionales de <strong>N8N</strong> listos para implementar. 
+        <br class="hidden sm:block">
+        Email marketing, e-commerce, CRM, social media y más.
+      </p>
+
+      <!-- Stats -->
+      <div class="flex flex-wrap justify-center gap-8 text-white/90">
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl font-bold">50+</div>
+          <div class="text-sm opacity-80">Workflows</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl font-bold">1000+</div>
+          <div class="text-sm opacity-80">Clientes</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl font-bold">95%</div>
+          <div class="text-sm opacity-80">Satisfacción</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl sm:text-3xl font-bold">24h</div>
+          <div class="text-sm opacity-80">Implementación</div>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <button 
+          onclick="document.getElementById('catalog-section').scrollIntoView({behavior: 'smooth'})"
+          class="group px-8 py-4 bg-white text-primary-600 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center"
+        >
+          <span>Ver Catálogo</span>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+          </svg>
+        </button>
+        
+        <button 
+          onclick="openCalendlyModal('general')"
+          class="group px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl font-semibold text-lg hover:bg-white hover:text-primary-600 transition-all duration-300 flex items-center space-x-2 min-w-[200px] justify-center backdrop-blur-sm"
+        >
+          <span>Demo Gratis</span>
+          <span class="text-xl">📅</span>
+        </button>
+      </div>
+
+      <!-- Trust Signals -->
+      <div class="pt-8 border-t border-white/20">
+        <p class="text-white/60 text-sm mb-4">Confían en nosotros:</p>
+        <div class="flex flex-wrap justify-center items-center gap-8 opacity-60">
+          <div class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
+            <span class="text-white font-medium">TechStartup</span>
+          </div>
+          <div class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
+            <span class="text-white font-medium">MiTiendaOnline</span>
+          </div>
+          <div class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
+            <span class="text-white font-medium">FitnessBrand</span>
+          </div>
+          <div class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm">
+            <span class="text-white font-medium">GrowthCorp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+    <button 
+      onclick="document.getElementById('catalog-section').scrollIntoView({behavior: 'smooth'})"
+      class="p-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-colors"
+      aria-label="Scroll to catalog"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+
+  /* Gradient animation */
+  .bg-gradient-to-r {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+</style>

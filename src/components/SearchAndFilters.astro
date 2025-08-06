@@ -1,0 +1,164 @@
+---
+// src/components/SearchAndFilters.astro
+export interface Props {
+  categories: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    color?: string;
+  }>;
+}
+
+const { categories } = Astro.props;
+---
+
+<div class="mb-12">
+  <!-- Search Bar -->
+  <div class="max-w-md mx-auto mb-8">
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      <input
+        type="text"
+        id="search-input"
+        class="block w-full pl-10 pr-3 py-4 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg shadow-lg transition-all duration-300"
+        placeholder="Buscar workflows, integraciones..."
+        autocomplete="off"
+      >
+    </div>
+  </div>
+
+  <!-- Filter Categories -->
+  <div class="flex flex-wrap justify-center gap-3 lg:gap-4">
+    <!-- All Categories Button -->
+    <button
+      data-filter="all"
+      class="filter-btn active px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-primary-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+    >
+      Todos
+    </button>
+    
+    <!-- Individual Category Buttons -->
+    {categories.map((category) => (
+      <button
+        data-filter={category.slug}
+        class="filter-btn px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-white text-gray-700 border border-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+        style={`--category-color: ${category.color || '#667eea'}`}
+      >
+        {category.name}
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .filter-btn {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filter-btn:not(.active):hover {
+    background: linear-gradient(135deg, var(--category-color, #667eea), var(--category-color, #764ba2));
+    color: white;
+    border-color: var(--category-color, #667eea);
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, var(--category-color, #667eea), var(--category-color, #764ba2));
+    color: white;
+    border: none;
+  }
+
+  .filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .filter-btn:hover::before {
+    left: 100%;
+  }
+
+  /* Search input focus animation */
+  #search-input:focus {
+    transform: scale(1.02);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<script>
+  // Enhanced filter button interactions
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active');
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        });
+        
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // Apply category color to active button
+        const categoryColor = getComputedStyle(button).getPropertyValue('--category-color') || '#667eea';
+        button.style.background = `linear-gradient(135deg, ${categoryColor}, ${categoryColor})`;
+        button.style.color = 'white';
+        button.style.borderColor = categoryColor;
+      });
+    });
+
+    // Search input enhancements
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      let searchTimeout;
+      
+      searchInput.addEventListener('input', (e) => {
+        // Add loading state
+        searchInput.style.backgroundImage = `url("data:image/svg+xml,%3csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10 2a8 8 0 100 16 8 8 0 000-16zm0 2a6 6 0 110 12 6 6 0 010-12z' fill='%23cbd5e0'/%3e%3c/svg%3e")`;
+        searchInput.style.backgroundRepeat = 'no-repeat';
+        searchInput.style.backgroundPosition = 'right 12px center';
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchInput.style.backgroundImage = '';
+        }, 500);
+      });
+
+      // Clear search button
+      const clearButton = document.createElement('button');
+      clearButton.innerHTML = '×';
+      clearButton.className = 'absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 text-xl font-bold opacity-0 transition-opacity';
+      clearButton.onclick = () => {
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+        clearButton.classList.add('opacity-0');
+      };
+      
+      searchInput.parentElement.appendChild(clearButton);
+      
+      searchInput.addEventListener('input', (e) => {
+        clearButton.classList.toggle('opacity-0', !e.target.value);
+      });
+    }
+  });
+</script>

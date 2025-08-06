@@ -1,0 +1,243 @@
+---
+// src/pages/workflows/[slug].astro
+import { db, Workflow, Category, WorkflowFeature, WorkflowIntegration, WorkflowUseCase, WorkflowROIMetric, WorkflowTestimonial, WorkflowInclude } from 'astro:db';
+import Layout from '../../layouts/Layout.astro';
+import WorkflowDetailHero from '../../components/WorkflowDetailHero.astro';
+import WorkflowDetailContent from '../../components/WorkflowDetailContent.astro';
+import WorkflowDetailSidebar from '../../components/WorkflowDetailSidebar.astro';
+import RelatedWorkflows from '../../components/RelatedWorkflows.astro';
+
+export async function getStaticPaths() {
+  const workflows = await db.select({
+    slug: Workflow.slug
+  }).from(Workflow).where((workflow) => workflow.active === true);
+  
+  return workflows.map(workflow => ({
+    params: { slug: workflow.slug }
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Fetch workflow with all related data
+const workflowData = await db.select({
+  id: Workflow.id,
+  title: Workflow.title,
+  slug: Workflow.slug,
+  description: Workflow.description,
+  longDescription: Workflow.longDescription,
+  icon: Workflow.icon,
+  categoryId: Workflow.categoryId,
+  nodeCount: Workflow.nodeCount,
+  complexity: Workflow.complexity,
+  rating: Workflow.rating,
+  deliveryTime: Workflow.deliveryTime,
+  priceMin: Workflow.priceMin,
+  priceMax: Workflow.priceMax,
+  setupTime: Workflow.setupTime,
+  maintenance: Workflow.maintenance,
+  scalability: Workflow.scalability,
+  aiIntegrated: Workflow.aiIntegrated,
+  supportDays: Workflow.supportDays,
+  consultationHours: Workflow.consultationHours,
+  featured: Workflow.featured,
+  metaTitle: Workflow.metaTitle,
+  metaDescription: Workflow.metaDescription,
+  categoryName: Category.name,
+  categorySlug: Category.slug,
+  categoryColor: Category.color,
+}).from(Workflow)
+.leftJoin(Category, (workflow, category) => workflow.categoryId === category.id)
+.where((workflow) => workflow.slug === slug)
+.get();
+
+if (!workflowData) {
+  return Astro.redirect('/404');
+}
+
+// Fetch related data
+const [features, integrations, useCases, roiMetrics, testimonials, includes] = await Promise.all([
+  db.select().from(WorkflowFeature).where((feature) => feature.workflowId === workflowData.id).orderBy((feature) => feature.order),
+  db.select().from(WorkflowIntegration).where((integration) => integration.workflowId === workflowData.id).orderBy((integration) => integration.order),
+  db.select().from(WorkflowUseCase).where((useCase) => useCase.workflowId === workflowData.id).orderBy((useCase) => useCase.order),
+  db.select().from(WorkflowROIMetric).where((metric) => metric.workflowId === workflowData.id).orderBy((metric) => metric.order),
+  db.select().from(WorkflowTestimonial).where((testimonial) => testimonial.workflowId === workflowData.id && testimonial.featured === true),
+  db.select().from(WorkflowInclude).where((include) => include.workflowId === workflowData.id).orderBy((include) => include.order)
+]);
+
+// Fetch related workflows from same category
+const relatedWorkflows = await db.select({
+  id: Workflow.id,
+  title: Workflow.title,
+  slug: Workflow.slug,
+  description: Workflow.description,
+  icon: Workflow.icon,
+  rating: Workflow.rating,
+  priceMin: Workflow.priceMin,
+  priceMax: Workflow.priceMax,
+  categoryName: Category.name,
+}).from(Workflow)
+.leftJoin(Category, (workflow, category) => workflow.categoryId === category.id)
+.where((workflow) => workflow.categoryId === workflowData.categoryId && workflow.id !== workflowData.id && workflow.active === true)
+.limit(3);
+
+// Combine all data
+const workflow = {
+  ...workflowData,
+  features: features.map(f => f.feature),
+  integrations,
+  useCases,
+  roiMetrics,
+  testimonials,
+  includes
+};
+
+// SEO data
+const pageTitle = workflow.metaTitle || `${workflow.title} - Workflow N8N Profesional`;
+const pageDescription = workflow.metaDescription || workflow.description;
+---
+
+<Layout 
+  title={pageTitle}
+  description={pageDescription}
+  keywords={`${workflow.title}, n8n workflow, ${workflow.categoryName}, automatización, ${workflow.features.join(', ')}`}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <ol class="flex items-center space-x-2 py-4 text-sm">
+        <li>
+          <a href="/" class="text-gray-500 hover:text-gray-700 transition-colors">
+            Inicio
+          </a>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          <a href="/#catalog-section" class="text-gray-500 hover:text-gray-700 transition-colors">
+            Workflows
+          </a>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-gray-900 font-medium">{workflow.title}</span>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Workflow Detail Hero -->
+  <WorkflowDetailHero workflow={workflow} />
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Main Content Column -->
+      <div class="lg:col-span-2">
+        <WorkflowDetailContent workflow={workflow} />
+      </div>
+
+      <!-- Sidebar -->
+      <div class="lg:col-span-1">
+        <WorkflowDetailSidebar workflow={workflow} />
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Workflows -->
+  {relatedWorkflows.length > 0 && (
+    <RelatedWorkflows workflows={relatedWorkflows} currentWorkflow={workflow} />
+  )}
+
+  <!-- JSON-LD Structured Data for SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": workflow.title,
+    "description": workflow.description,
+    "category": workflow.categoryName,
+    "brand": {
+      "@type": "Brand",
+      "name": "Workflow Catalog N8N"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": workflow.priceMin,
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStock",
+      "url": `https://tu-dominio.com/workflows/${workflow.slug}`
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": workflow.rating,
+      "reviewCount": 50
+    },
+    "review": workflow.testimonials.map(testimonial => ({
+      "@type": "Review",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": testimonial.rating
+      },
+      "author": {
+        "@type": "Person",
+        "name": testimonial.authorName
+      },
+      "reviewBody": testimonial.testimonialText
+    }))
+  })} />
+
+  <!-- Analytics Script for Workflow Detail View -->
+  <script define:vars={{ workflow }}>
+    // Track workflow detail view
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.analytics) {
+        window.analytics.setCurrentWorkflow({
+          title: workflow.title,
+          slug: workflow.slug,
+          categoryName: workflow.categoryName,
+          priceMin: workflow.priceMin,
+          complexity: workflow.complexity,
+          rating: workflow.rating
+        });
+        
+        window.analytics.trackPageView('workflow_detail', workflow.slug);
+        window.analytics.trackWorkflowInteraction('view_details', workflow);
+      }
+
+      // Track scroll depth for engagement
+      let maxScroll = 0;
+      window.addEventListener('scroll', () => {
+        const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+        
+        if (scrollPercent > maxScroll && scrollPercent % 25 === 0 && scrollPercent > 0) {
+          maxScroll = scrollPercent;
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'scroll_depth', {
+              event_category: 'workflow_detail',
+              event_label: workflow.title,
+              scroll_depth: scrollPercent,
+              workflow_id: workflow.slug
+            });
+          }
+        }
+      });
+
+      // Track time on page milestones
+      [30, 60, 120, 300].forEach(seconds => {
+        setTimeout(() => {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'time_on_workflow_page', {
+              event_category: 'engagement',
+              event_label: workflow.title,
+              time_seconds: seconds,
+              workflow_id: workflow.slug
+            });
+          }
+        }, seconds * 1000);
+      });
+    });
+  </script>
+</Layout>

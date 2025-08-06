@@ -6,6 +6,33 @@
       "name": "Development server",
       "request": "launch",
       "type": "node-terminal"
+    },
+    {
+      "name": "Debug Astro Dev Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/astro",
+      "args": ["dev", "--verbose"],
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "astro:*"
+      },
+      "console": "integratedTerminal",
+      "restart": true,
+      "protocol": "inspector",
+      "skipFiles": ["/**"]
+    },
+    {
+      "name": "Debug Astro Build",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/astro",
+      "args": ["build", "--verbose"],
+      "env": {
+        "NODE_ENV": "production",
+        "DEBUG": "astro:*"
+      },
+      "console": "integratedTerminal"
     }
   ]
 }
