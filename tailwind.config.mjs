@@ -1,4 +1,3 @@
-// tailwind.config.mjs
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -6,96 +5,29 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#f0f4ff',
-          100: '#e5edff',
-          200: '#d1dfff',
-          300: '#b8c7ff',
-          400: '#9ba5ff',
-          500: '#667eea',
-          600: '#5a67d8',
-          700: '#4c51bf',
-          800: '#434190',
-          900: '#3c366b',
-          950: '#252448',
+          50: 'rgb(var(--color-primary-50) / <alpha-value>)',
+          100: 'rgb(var(--color-primary-100) / <alpha-value>)',
+          500: 'rgb(var(--color-primary-500) / <alpha-value>)',
+          600: 'rgb(var(--color-primary-600) / <alpha-value>)',
+          700: 'rgb(var(--color-primary-700) / <alpha-value>)',
         },
         secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#764ba2',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-          950: '#4a044e',
+          500: 'rgb(var(--color-secondary-500) / <alpha-value>)',
+          600: 'rgb(var(--color-secondary-600) / <alpha-value>)',
         },
         accent: {
-          50: '#fff1f2',
-          100: '#ffe4e6',
-          200: '#fecdd3',
-          300: '#fda4af',
-          400: '#fb7185',
-          500: '#ff6b6b',
-          600: '#e11d48',
-          700: '#be123c',
-          800: '#9f1239',
-          900: '#881337',
-          950: '#4c0519',
+          500: 'rgb(var(--color-accent-500) / <alpha-value>)',
+          600: 'rgb(var(--color-accent-600) / <alpha-value>)',
         },
-        success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
-        },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.5s ease-in-out',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'pulse-soft': 'pulseSoft 2s infinite',
-        'bounce-soft': 'bounceSoft 1s ease-out',
-      },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(50px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        pulseSoft: {
-          '0%, 100%': { boxShadow: '0 5px 20px rgba(102, 126, 234, 0.4)' },
-          '50%': { boxShadow: '0 5px 30px rgba(102, 126, 234, 0.7)' },
-        },
-        bounceSoft: {
-          '0%, 20%, 53%, 80%, 100%': { transform: 'translateY(0)' },
-          '40%, 43%': { transform: 'translateY(-10px)' },
-          '70%': { transform: 'translateY(-5px)' },
-          '90%': { transform: 'translateY(-2px)' },
-        },
-      },
-      backdropBlur: {
-        'xs': '2px',
       },
       backgroundImage: {
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-card': 'var(--gradient-card)',
+        'gradient-text': 'var(--gradient-text)',
+        'gradient-accent': 'var(--gradient-accent)',
+        // Mantener compatibilidad con utilidades de Tailwind
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'hero-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'card-gradient': 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
       },
       spacing: {
         '18': '4.5rem',
@@ -115,25 +47,117 @@ export default {
         '90': '90',
         '100': '100',
       },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        'strong': '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 1s ease-out',
+        'fade-in-scale': 'fadeInScale 0.8s ease-out',
+        'slide-in-up': 'slideInUp 0.6s ease-out',
+        'gradient-shift': 'gradientShift 3s ease infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-soft': 'pulse-soft 2s infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0', transform: 'translateY(30px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInScale: {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        slideInUp: {
+          from: { opacity: '0', transform: 'translateY(30px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        'pulse-soft': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(102, 126, 234, 0.4)' },
+          '50%': { boxShadow: '0 0 0 10px rgba(102, 126, 234, 0)' },
+        },
+      },
     },
   },
   plugins: [
     require('@tailwindcss/typography'),
-    // Plugin personalizado para glassmorphism
-    function({ addUtilities }) {
-      const newUtilities = {
+    // Plugin personalizado mejorado
+    function({ addUtilities, addComponents, theme }) {
+      // Utilities para glassmorphism
+      addUtilities({
         '.glass': {
           background: 'rgba(255, 255, 255, 0.1)',
           backdropFilter: 'blur(10px)',
+          '-webkit-backdrop-filter': 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.2)',
         },
         '.glass-dark': {
           background: 'rgba(0, 0, 0, 0.1)',
           backdropFilter: 'blur(10px)',
+          '-webkit-backdrop-filter': 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         },
-      };
-      addUtilities(newUtilities);
+        '.glass-strong': {
+          background: 'rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(20px)',
+          '-webkit-backdrop-filter': 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+        },
+      });
+
+      // Components comunes
+      addComponents({
+        '.btn-primary': {
+          background: 'var(--gradient-hero)',
+          color: 'white',
+          padding: '0.75rem 1.5rem',
+          borderRadius: theme('borderRadius.xl'),
+          fontWeight: '600',
+          transition: 'all 0.3s ease',
+          border: 'none',
+          cursor: 'pointer',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: theme('boxShadow.xl'),
+          },
+        },
+        '.workflow-card': {
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          minHeight: '400px',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+            transform: 'translateY(-8px)',
+            boxShadow: theme('boxShadow.2xl'),
+          },
+        },
+      });
     },
   ],
+  // Safelist para clases dinámicas
+  safelist: [
+    'bg-gradient-to-r',
+    'from-yellow-400',
+    'via-pink-400', 
+    'to-blue-400',
+    'gradient-hero',
+    'gradient-text',
+    'bg-clip-text',
+    'text-transparent',
+    'animate-fade-in',
+    'animate-delay-100',
+    'animate-delay-200',
+    'animate-delay-300',
+    'animate-delay-400',
+    'animate-delay-500',
+    'animate-delay-600',
+  ]
 };
