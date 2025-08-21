@@ -144,7 +144,6 @@ export default {
   ],
   // Safelist para clases dinámicas
   safelist: [
-    'bg-gradient-to-r',
     'from-yellow-400',
     'via-pink-400', 
     'to-blue-400',

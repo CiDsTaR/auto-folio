@@ -8,7 +8,7 @@
 /* ===========================================
    CSS CUSTOM PROPERTIES (Design Tokens)
    =========================================== */
-:root {
+@theme {
   /* Colores primarios */
   --color-primary-50: #f0f4ff;
   --color-primary-100: #e0e7ff;
