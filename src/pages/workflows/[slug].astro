@@ -1,6 +1,6 @@
 ---
 // src/pages/workflows/[slug].astro
-import { db, Workflow, Category, WorkflowFeature, WorkflowIntegration, WorkflowUseCase, WorkflowROIMetric, WorkflowTestimonial, WorkflowInclude } from 'astro:db';
+import { db, eq, Workflow, Category, WorkflowFeature, WorkflowIntegration, WorkflowUseCase, WorkflowROIMetric, WorkflowTestimonial, WorkflowInclude } from 'astro:db';
 import Layout from '../../layouts/Layout.astro';
 import WorkflowDetailHero from '../../components/WorkflowDetailHero.astro';
 import WorkflowDetailContent from '../../components/WorkflowDetailContent.astro';
@@ -47,7 +47,7 @@ const workflowData = await db.select({
   categorySlug: Category.slug,
   categoryColor: Category.color,
 }).from(Workflow)
-.leftJoin(Category, (workflow, category) => workflow.categoryId === category.id)
+.leftJoin(Category, eq(Workflow.categoryId, Category.id))
 .where((workflow) => workflow.slug === slug)
 .get();
 
@@ -77,7 +77,7 @@ const relatedWorkflows = await db.select({
   priceMax: Workflow.priceMax,
   categoryName: Category.name,
 }).from(Workflow)
-.leftJoin(Category, (workflow, category) => workflow.categoryId === category.id)
+.leftJoin(Category, eq(Workflow.categoryId, Category.id))
 .where((workflow) => workflow.categoryId === workflowData.categoryId && workflow.id !== workflowData.id && workflow.active === true)
 .limit(3);
 
